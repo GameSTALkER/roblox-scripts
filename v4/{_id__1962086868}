@@ -1,0 +1,79 @@
+-- Tower of Hell
+
+while wait() do
+    local r = pcall(function()
+        ngamestalker:isLoaded()
+    end)
+    if r then
+        break
+    end
+end
+
+local gui = ngamestalker:Menu(tostring(game.PlaceId),true)
+gui = gui:Tab()
+local e = {}
+-- Services
+local TweenService = game:GetService("TweenService")
+local plr = game.Players.LocalPlayer
+-- vars
+if getgenv().ToHellVars == nil then getgenv().ToHellVars = {gm=false,dae=false} end
+
+local isteleporting = false
+local function TpToFin(sec)
+    isteleporting = true
+    plr.Character:WaitForChild("KillScript").Disabled = true
+    local a = TweenService:Create(plr.Character.HumanoidRootPart,TweenInfo.new(sec,Enum.EasingStyle.Linear),{CFrame = game:GetService("Workspace"):WaitForChild("tower").sections.finish.FinishGlow.CFrame})
+    a:Play()
+    a.Completed:Wait()
+    plr.Character:WaitForChild("KillScript").Disabled = getgenv().ToHellVars.gm
+    isteleporting = false
+    
+end
+
+gui:Button({name="Tp to finish (10 sec, can kill you)"},function()
+    if isteleporting then return end
+    TpToFin(10)
+    
+end)
+gui:Button({name="Tp to finish (70 sec, safe)"},function()
+    if isteleporting then return end
+    TpToFin(70)
+    
+end)
+e[1] = gui:Toggle({name="GodMode",state=getgenv().ToHellVars.gm,exec=true,key="f"},function(_)
+    if isteleporting then e[1]:Edit({state=not _}) return end
+    getgenv().ToHellVars.gm = _
+    plr.Character:WaitForChild("KillScript").Disabled = _
+    
+end)
+e[2] = gui:Toggle({name="Disable Annoying events",state=getgenv().ToHellVars.dae,exec=true,desc="Disables: 'Bunnyhop' event"},function(_)
+    if isteleporting then e[2]:Edit({state=not _}) return end
+    getgenv().ToHellVars.dae = _
+    plr.Character:WaitForChild("bunnyJump").Disabled = _
+    
+end)
+local savedCF = nil
+e[3] = gui:Button({name="Check Point",key="q"},function(_)
+    local c = plr.Character or plr.CharacterAdded:Wait()
+    savedCF = c:WaitForChild("HumanoidRootPart").CFrame
+end)
+e[4] = gui:Button({name="To to Check Point",key="e"},function(_)
+	if savedCF == nil then return end
+    isteleporting = true
+    local c = plr.Character or plr.CharacterAdded:Wait()
+    c:WaitForChild("KillScript").Disabled = true
+	local a = TweenService:Create(c:WaitForChild("HumanoidRootPart"),TweenInfo.new(1,Enum.EasingStyle.Linear),{CFrame = savedCF})
+	a:Play()
+	a.Completed:Wait()
+    c:WaitForChild("KillScript").Disabled = getgenv().ToHellVars.gm
+    isteleporting = false
+end)
+
+
+-- return all on spawn
+if getgenv().deathplayer_con ~= nil then getgenv().deathplayer_con:Disconnect() end
+getgenv().deathplayer_con = plr.CharacterAdded:Connect(function()
+    plr.Character:WaitForChild("KillScript").Disabled = getgenv().ToHellVars.gm
+    plr.Character:WaitForChild("bunnyJump").Disabled = getgenv().ToHellVars.dae
+
+end)

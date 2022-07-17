@@ -1,0 +1,228 @@
+-- Flee the Facility
+
+while wait() do
+    local r = pcall(function()
+        ngamestalker:isLoaded()
+    end)
+    if r then
+        break
+    end
+end
+
+-- Services
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local e = {}
+local ui = ngamestalker:Menu(tostring(game.PlaceId),true,function()
+    pcall(function() getgenv().fleethefacility["noobieBeastLifefucks"]:Disconnect() end)
+    wait(0.3)
+	local map = workspace:FindFirstChild(tostring(game.ReplicatedStorage.CurrentMap.Value))
+	if map then
+		for i,v in pairs(map:GetChildren()) do
+            pcall(function()
+				if v.Name == "ComputerTable" then
+					local isESP = v.Screen:FindFirstChild("ESP")
+					if isESP then isESP:Destroy() end
+				end
+		    end)
+		end
+	end
+	for i,v in pairs(plrs:GetPlayers()) do
+		local char = v.Character
+		if char then
+			local isESP = char.HumanoidRootPart:FindFirstChild("ESP")
+			if isESP then isESP:Destroy() end
+		end
+	end
+end)
+gui = ui:Tab("Player")
+bui = ui:Tab("Beast")
+
+-- Toggle buggy black screen
+plr.PlayerGui.BlackOutScreenGui.BlackOutFrame.Visible = false
+
+if getgenv().fleethefacility == nil then getgenv().fleethefacility = {} end
+
+local function esp(part,text,col)
+    col = col or Color3.fromRGB(100,255,100)
+	local wh = part:FindFirstChild("ESP")
+	if wh then
+		wh.T.TextColor3 = col
+		wh.T.Text = text
+	else
+		local BillboardGui = Instance.new("BillboardGui",part)
+			BillboardGui.Name = "ESP"
+			BillboardGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+			BillboardGui.Active = true
+			BillboardGui.AlwaysOnTop = true
+			BillboardGui.LightInfluence = 1.000
+			BillboardGui.Size = UDim2.new(0, 200, 0, 50)
+		
+		local TextLabel = Instance.new("TextLabel",BillboardGui)
+			TextLabel.Name = "T"
+			TextLabel.BackgroundTransparency = 1.000
+			TextLabel.Size = UDim2.new(0, 200, 0, 50)
+			TextLabel.Font = getgenv().ngamestalker:Info().Theme.Font
+			TextLabel.TextTransparency = 0
+			TextLabel.Text = text
+			TextLabel.TextColor3 = col
+			TextLabel.TextSize = 14.000
+			
+		local UIG = Instance.new("UIGradient",TextLabel)
+			UIG.Color = getgenv().ngamestalker:Info().Theme.gradient.text
+			UIG.Rotation = 45
+			UIG.Offset = Vector2.new(0,0.3)
+	end
+    
+end
+local function getBeast(plr) -- return player
+    if plr then
+        local char = plr.Character
+		local beast = char:FindFirstChild("BeastPowers")
+	    if beast then return plr end
+    else
+    	for i,v in pairs(plrs:GetPlayers()) do
+    	    local char = v.Character
+    	    if char then
+        		local beast = char:FindFirstChild("BeastPowers")
+        	    if beast then return v end
+    	    end
+    	end
+	end
+	return false
+end
+local function FireFunc(Event)
+    game:GetService("ReplicatedStorage").RemoteEvent:FireServer("Input","Trigger",true,Event)
+    game:GetService("ReplicatedStorage").RemoteEvent:FireServer("Input","Action",true)
+end
+
+e["Players"] = gui:Toggle({name="Players WH",key="false"})
+e["Computers"] = gui:Toggle({name="Computers WH",key="false"})
+
+e["autoComplete"] = gui:Toggle({name="Auto hack PC"})
+
+e["PodUnfreezer"] = gui:Button({name="Fire Freeze pods",desc="This mean you can Freeze or Unfreeze player from any distance (you can't do it on your self)"},function()
+    local map = workspace:FindFirstChild(tostring(game.ReplicatedStorage.CurrentMap.Value))
+    if map then
+        for i,v in pairs(map:GetChildren()) do
+            if v.Name == "FreezePod" and v:FindFirstChild("PodTrigger") then
+                FireFunc(v.PodTrigger.Event)
+            end
+        end
+    end
+end)
+e["ExitDoorOpen"] = gui:Button({name="Open Exit door (after hacking computers)"},function()
+    local map = workspace:FindFirstChild(tostring(game.ReplicatedStorage.CurrentMap.Value))
+    if map then
+        for i,v in pairs(map:GetChildren()) do
+            if v.Name == "ExitDoor" and v:FindFirstChild("ExitDoorTrigger") then
+                FireFunc(v.ExitDoorTrigger.Event)
+                break
+            end
+        end
+    end
+end)
+--
+
+e["BeastAim"] = bui:Button({name="Silent Aim + auto rope"},function(k,n)
+    local beast = getBeast(plr)
+    for i,v in pairs(plrs:GetPlayers()) do
+        local char = v.Character
+        if char and beast and v.Name ~= plr.Name then
+            beast.Character.Hammer.HammerEvent:FireServer("HammerHit",char.Torso)
+            beast.Character.Hammer.HammerEvent:FireServer("HammerTieUp",char.Torso,char.Torso.Position)
+        end
+    end
+end)
+
+e["beastPower"] = bui:Toggle({name="Beast auto-use super power"})
+e["beastSlow"] = bui:Toggle({name="Beast slow-down"})
+e["beastAntiRope"] = bui:Toggle({name="Beast anti-rope"})
+
+local db = {}
+
+if getgenv().fleethefacility["noobieBeastLifefucks"] then pcall(function() getgenv().fleethefacility["noobieBeastLifefucks"]:Disconnect() end) end
+spawn(function()
+	getgenv().fleethefacility["noobieBeastLifefucks"] = game:GetService("RunService").RenderStepped:Connect(function(step)
+		local map = workspace:FindFirstChild(tostring(game.ReplicatedStorage.CurrentMap.Value))
+		
+	    spawn(function()
+	        if map then
+	            -- PC WH
+    	        if e["Computers"]:Info().State and (not db["PCe"]) then
+			        db["PCd"] = false
+			        db["PCe"] = true
+        			for i,v in pairs(map:GetChildren()) do
+			            pcall(function()
+            				if v.Name == "ComputerTable" then
+            					esp(v.Screen,"Computer",v.Screen.Color)
+            				end
+        			    end)
+        			end
+    	        elseif (not e["Computers"]:Info().State) and (not db["PCd"]) then
+			        db["PCd"] = true
+			        db["PCe"] = false
+        			for i,v in pairs(map:GetChildren()) do
+			            pcall(function()
+            				if v.Name == "ComputerTable" then
+            					local isESP = v.Screen:FindFirstChild("ESP")
+            					if isESP then isESP:Destroy() end
+            				end
+        			    end)
+        			end
+    	        end
+	        else
+		        db["PCd"] = false
+		        db["PCe"] = false
+		    end
+	        -- Plr WH
+	        if e["Players"]:Info().State and (not db["PLR"]) then
+		        db["PLR"] = true
+		        db["PLRd"] = false
+				for i,v in pairs(plrs:GetPlayers()) do
+					if v.Name ~= plr.Name then
+						local char = v.Character
+						if char then
+							local isBeast = getBeast(v)
+							if isBeast then esp(char.HumanoidRootPart,"[Beast] @"..v.DisplayName,Color3.fromRGB(255,100,100))
+							else esp(char.HumanoidRootPart,"@"..v.DisplayName) end
+						end
+					end
+    				wait()
+				end
+		        db["PLR"] = false
+	        elseif (not db["PLR"]) and (not db["PLRd"]) then
+		        db["PLR"] = true
+		        db["PLRd"] = true
+        		for i,v in pairs(plrs:GetPlayers()) do
+        			local char = v.Character
+        			if char then
+        				local isESP = char.HumanoidRootPart:FindFirstChild("ESP")
+        				if isESP then isESP:Destroy() end
+        			end
+        		end
+		        db["PLR"] = false
+			end
+	    end)
+    
+	    -- Beast
+	    spawn(function()
+    	    if e["beastPower"]:Info().State or e["beastSlow"]:Info().State or e["beastAntiRope"]:Info().State then
+        		for i,v in pairs(plrs:GetPlayers()) do
+        			local beast = getBeast()
+        			if beast and v.Name ~= plr.Name then
+        				if e["beastPower"]:Info().State then beast.Character.BeastPowers.PowersEvent:FireServer("Input") end -- use beast power
+        				if e["beastSlow"]:Info().State then beast.Character.BeastPowers.PowersEvent:FireServer("Jumped") end -- slow down beast
+        				if e["beastAntiRope"]:Info().State then beast.Character.Hammer.HammerEvent:FireServer("HammerClick",true) end -- anti catch by rope (still can knockout)
+        			end
+    				wait()
+        		end
+    	    end
+	    end)
+	    
+        -- Auto hack
+	    if e["autoComplete"]:Info().State then
+	        game.ReplicatedStorage.RemoteEvent:FireServer("SetPlayerMinigameResult",true)
+        end
+	end)
+end)

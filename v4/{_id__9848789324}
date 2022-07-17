@@ -1,0 +1,45 @@
+-- Ragdoll Engine
+
+while wait() do
+    local r = pcall(function()
+        ngamestalker:isLoaded()
+    end)
+    if r then
+        break
+    end
+end
+
+local menu = ngamestalker:Menu(game.PlaceId,true)
+local tab1 = menu:Tab()
+
+btn = {[1]=nil,[2]=nil}
+
+local plr = game:GetService("Players").LocalPlayer
+
+btn[1] = tab1:Toggle({name="Ragdoll script",state=true,exec=true},function(state)
+    local rg = plr.Character:FindFirstChild("RagdollMe")
+    local rg1 = plr.Character:FindFirstChild("StartRagdoll")
+    local p = plr.Character:FindFirstChild("Pushed")
+    
+    if rg ~= nil and rg1 ~= nil and p ~= nil then
+        rg.Disabled = not state
+        rg1.Disabled = not state
+        p.Disabled = not state
+    else
+        btn[1]:Edit({name="Reset character",state=false})
+        wait(1)
+        btn[1]:Edit({name="Ragdoll script"})
+    end
+    
+end)
+btn[2] = tab1:Toggle({name="FirstPerson script",state=true,exec=true}, function(state)
+    local fp = plr.Character:FindFirstChild("FirstPerson")
+    
+    if fp ~= nil then
+        fp.Disabled = not state
+    else
+        btn[2]:Edit({name="Reset character",state=false})
+        wait(1)
+        btn[2]:Edit({name="FirstPerson script"})
+    end
+end)

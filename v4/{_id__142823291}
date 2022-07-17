@@ -1,0 +1,278 @@
+-- Murder Mystery 2
+
+getgenv().mm2_menu_initalizing = true
+
+while wait() do
+    local r = pcall(function()
+        ngamestalker:isLoaded()
+    end)
+    if r then
+        break
+    end
+end
+
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local Tw = game:GetService("TweenService")
+local WK = game:GetService("Workspace")
+
+local session = ScriptSession(1)
+
+local m = getgenv().ngamestalker:Menu(game.PlaceId,true)
+local t = m:Tab()
+local e = {}
+
+if getgenv().mm2_connection == nil then getgenv().mm2_connection = {}
+else
+    for i,v in pairs(getgenv().mm2_connection) do
+        pcall(function() getgenv().mm2_connection[i]:Disconnect() end)
+        getgenv().mm2_connection[i] = nil
+    end
+    getgenv().mm2_connection = {}
+end
+
+local function marker(tool,part,col)
+    col = col or Color3.fromRGB(100,255,100)
+    local function esp(col,text)
+        local wh = part:FindFirstChild("ESP")
+        if wh then
+            wh.T.TextColor3 = col
+            wh.T.Text = text
+        else
+            local BillboardGui = Instance.new("BillboardGui",part)
+                BillboardGui.Name = "ESP"
+                BillboardGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+                BillboardGui.Active = true
+                BillboardGui.AlwaysOnTop = true
+                BillboardGui.LightInfluence = 1.000
+                BillboardGui.Size = UDim2.new(0, 200, 0, 50)
+            
+            local TextLabel = Instance.new("TextLabel",BillboardGui)
+                TextLabel.Name = "T"
+                TextLabel.BackgroundTransparency = 1.000
+                TextLabel.Size = UDim2.new(0, 200, 0, 50)
+                TextLabel.Font = getgenv().ngamestalker:Info().Theme.Font
+                TextLabel.TextTransparency = 0
+                TextLabel.Text = text
+                TextLabel.TextColor3 = col
+                TextLabel.TextSize = 14.000
+                
+            local UIG = Instance.new("UIGradient",TextLabel)
+                UIG.Color = getgenv().ngamestalker:Info().Theme.gradient.text
+                UIG.Rotation = 45
+                UIG.Offset = Vector2.new(0,0.3)
+        end
+        
+    end
+    if tool.Name == "Gun" then
+        esp(Color3.fromRGB(100,100,255),"Sheriff")
+    elseif tool.Name == "Knife" then
+        esp(Color3.fromRGB(255,100,100),"Murder")
+    else
+        esp(col,tool.Name)
+    end
+end
+
+local function getTool(v)
+    local char = v.Character
+    if char then
+        return (v.Backpack:FindFirstChild("Knife") or char:FindFirstChild("Knife")) or (v.Backpack:FindFirstChild("Gun") or char:FindFirstChild("Gun")) or {Name="Innocent"}
+    end
+    return {Name="Innocent"}
+end
+
+local function getMap()
+    local CurrentMap = false
+    for i,v in pairs(WK:GetChildren()) do
+        if v:FindFirstChild("Map") then 
+            CurrentMap = v
+            local spawns = v:WaitForChild("Spawns")
+            local vloer = spawns:FindFirstChild("Vloer")
+            if not vloer then
+                vloer = Instance.new("Part",spawns)
+                vloer.Name = "Vloer"
+                vloer.CanCollide = true
+                vloer.Anchored = true
+                vloer.Size = Vector3.new(500,2,500)
+                vloer.Position = spawns:FindFirstChild("Spawn").Position - Vector3.new(0,25,0)
+            end
+            
+            break
+        end
+    end
+   
+    return CurrentMap 
+end
+local function ChangeNDesc(n,b,t)
+    pcall(function() if n then n:Desc(t) end end)
+    local oldName = b:Info().Name
+    b:Edit({name=t})
+    wait(1)
+    b:Edit({name=oldName})
+end
+
+getgenv().mm2_connection["WALLHACK"] = false
+e["WHb"] = t:Toggle({name="Player WH",desc="Will show who are murder or sheriff",key="false"},function(state)
+    if getgenv().mm2_menu_initalizing == true then e["WHb"]:Edit({state=not state}) return end
+    getgenv().mm2_connection["WALLHACK"] = state
+    if state then
+        spawn(function()
+            while getgenv().mm2_connection["WALLHACK"] and wait(1) do
+                for i,v in pairs(plrs:GetPlayers()) do
+                    pcall(function()
+                        if v.Name ~= plr.Name then
+                            local char = v.Character
+                            if char then 
+                                local tool = getTool(v)
+                                marker(tool,char.HumanoidRootPart)
+                            end
+                        end
+                    end)
+                    wait()
+                end
+            end
+            for i,v in pairs(plrs:GetPlayers()) do
+                local char = v.Character
+                if char then 
+                    local a = char.HumanoidRootPart:FindFirstChild("ESP")
+                    if a then a.T.Text = "" end
+                end
+                wait()
+            end
+        end)
+    end
+end)
+getgenv().mm2_connection["WALLHACKGUN"] = false
+e["Gunt"] = t:Toggle({name="Dropped gun WH",key="false"},function(state)
+    if getgenv().mm2_menu_initalizing == true then e["Gunt"]:Edit({state=not state}) return end
+    getgenv().mm2_connection["WALLHACKGUN"] = state
+    if state then
+        spawn(function()
+            while getgenv().mm2_connection["WALLHACKGUN"] and wait(1) do
+                local GunDrop = WK:WaitForChild("GunDrop")
+                if GunDrop then
+                    marker(GunDrop,GunDrop,Color3.fromRGB(50,50,255)) 
+                end
+            end
+        end)
+    end
+end)
+
+getgenv().mm2_connection["WALLHACKCOIN"] = false
+e["ColWHb"] = t:Toggle({name="Coins WH",key="false"},function(state)
+    if getgenv().mm2_menu_initalizing == true then e["ColWHb"]:Edit({state=not state}) return end
+    getgenv().mm2_connection["WALLHACKCOIN"] = state
+    if state then
+        spawn(function()
+            while getgenv().mm2_connection["WALLHACKCOIN"] and wait(1) do
+                local map = getMap()
+                if map then
+                    map = map:FindFirstChild("CoinContainer")
+                    if map then
+                        spawn(function()
+                            for i,v in pairs(map:GetChildren()) do
+                                if v.Name == "Coin_Server" or v.Name == "Coin" then
+                                    v.Name = "Coin"
+                                    marker(v,v,Color3.fromRGB(255,255,100))
+                                elseif v.Name ~= "Coin" then v:Destroy()
+                                end
+                            end
+                        end)
+                    end
+                end
+            end
+        end)
+    else
+        local map = getMap()
+        if map then
+            map = map:FindFirstChild("CoinContainer")
+            if map then
+                for i,v in pairs(map:GetChildren()) do
+                    local esp = v:FindFirstChild("ESP")
+                    if esp then esp:Destroy() end
+                end
+            end
+        end
+    end
+end)
+
+e["ColCb"] = t:Button({name="Collect coins",key="v"},function(k,n)
+    if getgenv().mm2_menu_initalizing == true then return end
+    local map = getMap()
+    local CashBag = plr.PlayerGui:WaitForChild("MainGUI"):WaitForChild("Game"):WaitForChild("CashBag")
+    local isFull = CashBag:WaitForChild("Full").Visible
+    CashBag = CashBag.Visible
+    if map and (not isFull) and CashBag then
+        local available = false
+        for i,v in pairs(map:WaitForChild("CoinContainer"):GetChildren()) do
+            if v.Name == "Coin_Server" or v.Name == "Coin" then
+                local mag =  (plr.Character.HumanoidRootPart.Position - v.Position).Magnitude
+                if mag <= 25 then
+                    available = true
+                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.CFrame.Position)
+                    wait(1.5)
+                end
+            end
+        end
+        if (not available) then ChangeNDesc(n,e["ColCb"],"Come closer to coin!") end
+    elseif isFull then ChangeNDesc(n,e["ColCb"],"Already full!")
+    elseif (not CashBag) then ChangeNDesc(n,e["ColCb"],"You're in lobby.")
+    end
+end)
+e["GunGb"] = t:Button({name="Grab Gun",key="g"},function(k,n)
+    local gun = WK:FindFirstChild("GunDrop")
+    local CashBag = plr.PlayerGui:WaitForChild("MainGUI"):WaitForChild("Game"):WaitForChild("CashBag").Visible
+    if gun and CashBag then
+        local oldC = plr.Character.HumanoidRootPart.CFrame
+        
+        plr.Character.HumanoidRootPart.CFrame = CFrame.new(gun.Position)
+        wait(0.5)
+        plr.Character.HumanoidRootPart.CFrame = CFrame.new(oldC.Position)
+        
+    elseif CashBag then ChangeNDesc(n,e["GunGb"],"Gun not found.")
+    else ChangeNDesc(n,e["GunGb"],"You're in lobby.") end
+end)
+
+e["KILLb"] = t:Button({name="Kill all (as murder)",key="c"},function(k,n)
+    local tool = getTool(plr)
+    if tool.Name == "Innocent" then
+        ChangeNDesc(n,e["KILLb"],"Get tool first.")
+    else
+        plr.Character.Humanoid:EquipTool(tool)
+        for i,v in pairs(plrs:GetPlayers()) do
+            if v.Name ~= plr.Name then
+                local char = v.Character
+                if char then 
+                    local role = getTool(v)
+                    if role.Name ~= "Innocent" then
+                        if tool.Name == "Knife" then
+                            plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+                            wait()
+                            tool.Stab:FireServer("Slash")
+                        else
+                            plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+                            wait()
+                            tool.KnifeServer.ShootGun:InvokeServer(1,char.HumanoidRootPart.CFrame.Angels,"AH")
+                        end
+                    elseif tool.Name == "Knife" and WK:FindFirstChild("GunDrop") and (char.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 150 then
+                        plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+                        tool.Stab:FireServer("Slash")
+                        wait(0.5)
+                    end
+                end
+            end
+            wait()
+        end
+    end
+end)
+
+e["COMEBACKb"] = t:Button({name="Back to map (if fall out of the map)",key="b"},function()
+    local map = getMap()
+    if map then 
+        local spawns = map:WaitForChild("Spawns")
+        local spawn = spawns:FindFirstChild("Spawn").Position
+        plr.Character.HumanoidRootPart.CFrame = CFrame.new(spawn+Vector3.new(0,3,0)) 
+    end
+end)
+
+getgenv().mm2_menu_initalizing = false

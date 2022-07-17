@@ -1,0 +1,69 @@
+-- Fling Things and People
+
+while wait() do
+    local r = pcall(function()
+        ngamestalker:isLoaded()
+    end)
+    if r then
+        break
+    end
+end
+
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+
+local m = ngamestalker:Menu(tostring(game.PlaceId),true)
+local t = m:Tab()
+local e = {}
+
+e["remab"] = t:Button({name="Remove all items", desc="Will remove all spawned items by you"}, function()
+    spawn(function()
+        for i,v in pairs(game.workspace[plr.Name.."SpawnedInToys"]:GetChildren()) do
+        	if v.ClassName == "Model" then
+				game:GetService("ReplicatedStorage").MenuToys.DestroyToy:FireServer(v)
+			end
+        end
+    end)
+end)
+getgenv().getgoodgetlaydog = false
+e["laydogst"] = t:Toggle({name="Lay dog", desc="Make people around you lay",state=getgenv().getgoodgetlaydog},function(_)
+    getgenv().getgoodgetlaydog = _
+    if getgenv().getgoodgetlaydog then 
+        spawn(function()
+            while getgenv().getgoodgetlaydog do
+                for i,v in pairs(plrs:GetChildren()) do
+					if v.Name ~= plr.Name then
+						game:GetService("ReplicatedStorage").GrabEvents.SetNetworkOwner:FireServer(unpack({[1] = v.Character.HumanoidRootPart,[2] = "player"}))
+					end
+                end
+                wait(1)
+            end
+        end)
+    end
+end)
+getgenv().autofarming = false
+e["autocb"] = t:Toggle({name="Auto casino",desc="Automaticly collect cash from casino",state=getgenv().autofarming},function(_)
+    getgenv().autofarming = _
+
+    if getgenv().autofarming then
+        spawn(function()
+            while getgenv().autofarming do
+                
+                local mychar = game.Players.LocalPlayer.Character
+                local pos = mychar.HumanoidRootPart.CFrame
+                local casino = game.workspace.Slots.Slots.SlotHandle.Handle
+                local timel = game:GetService("Workspace").Slots.Slots.Screen.SlotGui.TimeLeftFrame.TimeText
+                
+                repeat wait(3) until timel.Text == "0:00" or getgenv().autofarming == false
+                if getgenv().autofarming then
+                    game:GetService("TweenService"):Create(mychar.HumanoidRootPart,TweenInfo.new(.1),{CFrame = casino.CFrame}):Play()
+                    wait(0.5)
+                    game:GetService("ReplicatedStorage").GrabEvents.SetNetworkOwner:FireServer(unpack({[1] = casino,[2] = "player"}))
+                    wait(0.3)
+                    game:GetService("TweenService"):Create(mychar.HumanoidRootPart,TweenInfo.new(.1),{CFrame = pos}):Play()
+                end
+            
+            end
+        end)
+    end
+end)
