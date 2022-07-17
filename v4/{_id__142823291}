@@ -250,8 +250,6 @@ e["KILLb"] = t:Button({name="Kill all (as murder)",key="c"},function(k,n)
                             wait()
                             tool.Stab:FireServer("Slash")
                         else
-                            plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                            wait()
                             tool.KnifeServer.ShootGun:InvokeServer(1,char.HumanoidRootPart.CFrame.Angels,"AH")
                         end
                     elseif tool.Name == "Knife" and WK:FindFirstChild("GunDrop") and (char.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 150 then
