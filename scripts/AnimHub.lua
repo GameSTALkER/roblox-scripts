@@ -109,8 +109,12 @@ end)
 --
 local function exec(RigType,Hats,link)
     if getRigType() == RigType or RigType == "UNI" then
-        if getgenv().neededhats(Hats) then getgenv().netless();loadstring(game:HttpGet("https://raw.githubusercontent.com/GameSTALkER/roblox-scripts/main/scripts/AnimHub.Scripts/"..RigType.."/"..link..".lua"))();return true
-        else ngamestalker:Notification({desc="You forgot wear some hats (open console to check)"});return false end
+        if Hats then 
+            if getgenv().neededhats(Hats) then getgenv().netless()
+                spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/GameSTALkER/roblox-scripts/main/scripts/AnimHub.Scripts/"..RigType.."/"..link..".lua"))() end)
+                return true
+            else ngamestalker:Notification({desc="You forgot wear some hats (open console to check)"});return false end
+        else spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/GameSTALkER/roblox-scripts/main/scripts/AnimHub.Scripts/"..RigType.."/"..link..".lua"))() end) end
     else ngamestalker:Notification({desc="Accepting only "..RigType.."."});return false end
 end
 
@@ -147,7 +151,6 @@ local data = {
 
     FakeVR = {
         "UNI";
-        {};
     };
     Eyes = {
         "UNI";
