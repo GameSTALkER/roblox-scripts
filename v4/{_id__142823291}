@@ -233,7 +233,7 @@ e["GunGb"] = t:Button({name="Grab Gun",key="g"},function(k,n)
     else ChangeNDesc(n,e["GunGb"],"You're in lobby.") end
 end)
 
-e["KILLb"] = t:Button({name="Kill all (as murder)",key="c"},function(k,n)
+e["KILLb"] = t:Button({name="Kill all or silent aim",key="c"},function(k,n)
     local tool = getTool(plr)
     if tool.Name == "Innocent" then
         ChangeNDesc(n,e["KILLb"],"Get tool first.")
@@ -242,21 +242,15 @@ e["KILLb"] = t:Button({name="Kill all (as murder)",key="c"},function(k,n)
         for i,v in pairs(plrs:GetPlayers()) do
             if v.Name ~= plr.Name then
                 local char = v.Character
-                if char then 
+                if char and (plr.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude <= 150 then 
                     local role = getTool(v)
-                    if role.Name ~= "Innocent" then
-                        if tool.Name == "Knife" then
-                            plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
-                            wait()
-                            tool.Stab:FireServer("Slash")
-                        else
-                            tool.KnifeServer.ShootGun:InvokeServer(1,char.HumanoidRootPart.CFrame.Angels,"AH")
-                        end
-                    elseif tool.Name == "Knife" and WK:FindFirstChild("GunDrop") and (char.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 150 then
-                        plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
-                        tool.Stab:FireServer("Slash")
-                        wait(0.5)
-                    end
+                    if role.Name == "Innocent" and tool.Name == "Knife" then -- kill all (as murder)
+						plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+						wait()
+						tool.Stab:FireServer("Slash")
+					elseif role.Name == "Knife" and tool.Name == "Gun" then -- kill murder if have gun
+						tool.KnifeServer.ShootGun:InvokeServer(1,char.HumanoidRootPart.CFrame.Angles,"AH")
+					end
                 end
             end
             wait()
