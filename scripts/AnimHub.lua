@@ -36,7 +36,7 @@ local function getRigType()
 end
 
 emoteButtons = {}
-local emotesTable = false
+local gotEmotes = false
 local function PlayEmote(emoteName,b)
     b:Edit({name="Getting Humanoid..."})
     local myChar = plr.Character or plr.CharacterAdded:Wait()
@@ -52,8 +52,7 @@ local function PlayEmote(emoteName,b)
         end
     elseif not humanoid:GetAttribute("AllEmotesLoaded") and humanoid.RigType == Enum.HumanoidRigType.R15 then
         humanoid:SetAttribute("AllEmotesLoaded",true)
-        if emotesTable == false then
-            emotesTable = {}
+        if gotEmotes == false then
             b:Edit({name="Requesting for animations..."})
             local animationCategory = httpService:JSONDecode(game:HttpGet('https://catalog.roblox.com/v1/categories')).AvatarAnimations
             local emoteCategory = httpService:JSONDecode(game:HttpGet('https://catalog.roblox.com/v1/subcategories')).EmoteAnimations
@@ -69,15 +68,15 @@ local function PlayEmote(emoteName,b)
                 cursor = response.nextPageCursor
                 
                 for _, data in ipairs(response.data) do
-                    emotesTable[data.name:lower()]={data.id}
+                	humanoid.HumanoidDescription:AddEmote(data.name:lower(),data.id)
                 end
             
                 if not cursor then
                     break
                 end
             end
+            gotEmotes = true
         end
-        humanoid.HumanoidDescription:SetEmotes(emotesTable)
         b:Edit({name="Play Emote \""..emoteName.."\""})
         local r = pcall(function() humanoid:PlayEmote(emoteName) end)
         if not r then
