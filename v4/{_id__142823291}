@@ -244,13 +244,13 @@ e["KILLb"] = t:Button({name="Kill all or silent aim(shit)",key="c"},function(k,n
                 local char = v.Character
                 if char and (plr.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude <= 150 then 
                     local role = getTool(v)
-                    if role.Name == "Innocent" and tool.Name == "Knife" then -- kill all (as murder)
-						plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
-						wait()
-						tool.Stab:FireServer("Slash")
-					elseif role.Name == "Knife" and tool.Name == "Gun" then -- kill murder if have gun
-						tool.KnifeServer.ShootGun:InvokeServer(1,char.Head.CFrame.Position ,"AH")
-					end
+                    if tool.Name == "Knife" then -- kill all (as murder)
+			plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+			wait()
+			tool.Stab:FireServer("Slash")
+		    elseif role.Name == "Knife" and tool.Name == "Gun" then -- kill murder if have gun
+			tool.KnifeServer.ShootGun:InvokeServer(1,char.Head.CFrame.Position ,"AH")
+		    end
                 end
             end
             wait()
