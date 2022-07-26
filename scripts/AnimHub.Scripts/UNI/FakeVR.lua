@@ -240,11 +240,11 @@ local AccessorySettings = {
     BlockArms = true,
     BlockLegs = true,
     BlockTorso = true,
-    LimbOffset = CFrame.Angles(math.rad(90), 0, 0)
+    LimbOffset = CFrame.Angles(math.rad(110), 0, 0)
 }
 local FootPlacementSettings = {
-    RightOffset = Vector3.new(.5, 0, 0),
-    LeftOffset = Vector3.new(-.5, 0, 0)
+    RightOffset = Vector3.new(.5, -0.1, 0),
+    LeftOffset = Vector3.new(-.5, -0.1, 0)
 }
 --|| Script:
 local Script = nil
