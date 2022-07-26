@@ -15,9 +15,9 @@ re-released by discord.gg/dogpower & modified by https://discord.gg/Hbq3TgAJbB
 ]]
 
 --[[---------Settings---------]]--
-local bodyTransparency = 0 --Change the transparency of your character (0 - 1)
-local bodyVelocity = {-17.7, 0, -17.7} --Change your body parts velocity. First number value is the X value. Second number value is the Y value. Third number value is the Z value.
-local hatVelocity = {-17.7, 0, -17.7} --Change your accessory's velocity. First number value is the X value. Second number value is the Y value. Third number value is the Z value.
+local bodyTransparency = 0.5 --Change the transparency of your character (0 - 1)
+local bodyVelocity = {-35, 0, 0} --Change your body parts velocity. First number value is the X value. Second number value is the Y value. Third number value is the Z value.
+local hatVelocity = {-35, 0, 0} --Change your accessory's velocity. First number value is the X value. Second number value is the Y value. Third number value is the Z value.
 --Velocity is not recommended to be (-17.7, 0, -17.7) in R15 since body parts often fall in R15.
 --[[--------------------------]]--
 
@@ -216,8 +216,8 @@ cHRP.CFrame = hrp.CFrame
 
 --|| Settings:
 local StudsOffset = 0 -- Character height (negative if you're too high)
-local Smoothness = .1 -- Character interpolation (0.1 - 1 = smooth - rigid)
-local AnchorCharacter = false -- Prevent physics from causing inconsistencies
+local Smoothness = 0.1 -- Character interpolation (0.1 - 1 = smooth - rigid)
+local AnchorCharacter = true -- Prevent physics from causing inconsistencies
 local HideCharacter = false -- Hide character on a platform
 local NoCollision = true -- Disable player collision
 local ChatEnabled = true -- See chat on your left hand in-game
@@ -243,8 +243,8 @@ local AccessorySettings = {
     LimbOffset = CFrame.Angles(math.rad(110), 0, 0)
 }
 local FootPlacementSettings = {
-    RightOffset = Vector3.new(.5, -0.1, 0),
-    LeftOffset = Vector3.new(-.5, -0.1, 0)
+    RightOffset = Vector3.new(.5, 0, 0),
+    LeftOffset = Vector3.new(-.5, 0, 0)
 }
 --|| Script:
 local Script = nil
@@ -950,7 +950,7 @@ Script = function()
                         for i = 1, #Descendants do
                             local Part = Descendants[i]
                             if Part:IsA("BasePart") then
-                                Part.CanCollide = NoCollision
+                                Part.CanCollide = false
                                 Part.Velocity = Vector3.new()
                                 Part.RotVelocity = Vector3.new()
                             end
