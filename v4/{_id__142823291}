@@ -233,7 +233,7 @@ e["GunGb"] = t:Button({name="Grab Gun",key="g"},function(k,n)
     else ChangeNDesc(n,e["GunGb"],"You're in lobby.") end
 end)
 
-e["KILLb"] = t:Button({name="Kill all or silent aim",key="c"},function(k,n)
+e["KILLb"] = t:Button({name="Kill all or silent aim(shit)",key="c"},function(k,n)
     local tool = getTool(plr)
     if tool.Name == "Innocent" then
         ChangeNDesc(n,e["KILLb"],"Get tool first.")
@@ -249,7 +249,7 @@ e["KILLb"] = t:Button({name="Kill all or silent aim",key="c"},function(k,n)
 						wait()
 						tool.Stab:FireServer("Slash")
 					elseif role.Name == "Knife" and tool.Name == "Gun" then -- kill murder if have gun
-						tool.KnifeServer.ShootGun:InvokeServer(1,char.HumanoidRootPart.CFrame.Angles,"AH")
+						tool.KnifeServer.ShootGun:InvokeServer(1,char.Head.CFrame.Position ,"AH")
 					end
                 end
             end
