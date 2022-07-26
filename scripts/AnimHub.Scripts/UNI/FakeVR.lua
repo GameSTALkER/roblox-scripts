@@ -162,9 +162,9 @@ headMesh.Scale = Vector3.new(1.25, 1.25, 1.25)
 local reanimation = model
 
 --Creating Attachments
-CreateAttachment(cHead, Vector3.new(0,0.60000002384186,0), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "HairAttachment")
-CreateAttachment(cHead, Vector3.new(0,0.60000002384186,0), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "HatAttachment")
-CreateAttachment(cHead, Vector3.new(0,0,-0.60000002384186), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "FaceFrontAttachment")
+CreateAttachment(cHead, Vector3.new(0,0.6,0), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "HairAttachment")
+CreateAttachment(cHead, Vector3.new(0,0.6,0), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "HatAttachment")
+CreateAttachment(cHead, Vector3.new(0,0,-0.6), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "FaceFrontAttachment")
 CreateAttachment(cHead, Vector3.new(0,0,0), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "FaceCenterAttachment")
 CreateAttachment(cTorso, Vector3.new(0,1,0), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "NeckAttachment")
 CreateAttachment(cTorso, Vector3.new(0,0,-0.5), Vector3.new(-0,0,0), Vector3.new(1,0,0), Vector3.new(0,1,0), "BodyFrontAttachment")
@@ -219,7 +219,7 @@ local StudsOffset = 0 -- Character height (negative if you're too high)
 local Smoothness = .5 -- Character interpolation (0.1 - 1 = smooth - rigid)
 local AnchorCharacter = false -- Prevent physics from causing inconsistencies
 local HideCharacter = false -- Hide character on a platform
-local NoCollision = false-- Disable player collision
+local NoCollision = false -- Disable player collision
 local ChatEnabled = true -- See chat on your left hand in-game
 local ChatLocalRange = 75 -- Local chat range
 local ViewportEnabled = true -- View nearby players in a frame
@@ -552,7 +552,7 @@ Script = function()
     --
     VirtualBody.Parent = workspace
     VirtualBody.Name = "VirtualBody"
-    VirtualBody.Humanoid.WalkSpeed = 8
+    VirtualBody.Humanoid.WalkSpeed = 12
     VirtualBody.Humanoid.CameraOffset = Vector3.new(0, StudsOffset, 0)
     VirtualBody:SetPrimaryPartCFrame(CharacterCFrame)
     VirtualBody.Humanoid.Died:Connect(
@@ -689,7 +689,7 @@ Script = function()
         Dist = math.clamp(Dist, 0, 5)
         local FootTarget =
             VirtualRig.LowerTorso.CFrame * CFrame.new(FootPlacementSettings.RightOffset) - Vector3.new(0, Dist, 0) +
-            Character.Humanoid.MoveDirection * (VirtualBody.Humanoid.WalkSpeed / 8) * 2
+            Character.Humanoid.MoveDirection * (VirtualBody.Humanoid.WalkSpeed / 12) * 2
         if FootReady(VirtualRig.RightFoot, FootTarget) then
             VirtualRig.RightFoot.BodyPosition.Position = FootTarget.p
             VirtualRig.RightFoot.BodyGyro.CFrame = Flatten(VirtualRig.LowerTorso.CFrame)
@@ -697,7 +697,7 @@ Script = function()
         FootYield()
         local FootTarget =
             VirtualRig.LowerTorso.CFrame * CFrame.new(FootPlacementSettings.LeftOffset) - Vector3.new(0, Dist, 0) +
-            Character.Humanoid.MoveDirection * (VirtualBody.Humanoid.WalkSpeed / 8) * 2
+            Character.Humanoid.MoveDirection * (VirtualBody.Humanoid.WalkSpeed / 12) * 2
         if FootReady(VirtualRig.LeftFoot, FootTarget) then
             VirtualRig.LeftFoot.BodyPosition.Position = FootTarget.p
             VirtualRig.LeftFoot.BodyGyro.CFrame = Flatten(VirtualRig.LowerTorso.CFrame)
@@ -950,7 +950,7 @@ Script = function()
                         for i = 1, #Descendants do
                             local Part = Descendants[i]
                             if Part:IsA("BasePart") then
-                                Part.CanCollide = false
+                                Part.CanCollide = NoCollision
                                 Part.Velocity = Vector3.new()
                                 Part.RotVelocity = Vector3.new()
                             end
@@ -1013,7 +1013,7 @@ Script = function()
                     "Out",
                     1,
                     {
-                        WalkSpeed = 16
+                        WalkSpeed = 21
                     }
                 )
             end
@@ -1055,7 +1055,7 @@ Script = function()
                     "Out",
                     1,
                     {
-                        WalkSpeed = 8
+                        WalkSpeed = 12
                     }
                 )
             end
