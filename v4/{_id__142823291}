@@ -242,7 +242,7 @@ spawn(function()
     while whileLoop and wait(1) do
         local map = nil
         for i,v in pairs(WK:GetChildren()) do
-            if v:FindFirstChild("Map") then 
+            if v:FindFirstChild("Map") or v:FindFirstChild("CoinContainer") then 
                 map = v
                 break
             end
