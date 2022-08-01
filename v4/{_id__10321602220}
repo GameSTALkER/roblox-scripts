@@ -1,0 +1,39 @@
+-- КЕКС КОНДО
+
+local awaiters = {}
+local cons = {}
+local B = {}
+
+local plr = game:GetService("Players").LocalPlayer
+local plrGui = plr.PlayerGui 
+
+local menu = ngamestalker:Menu(game.PlaceId,true,function()
+    for i,v in pairs(awaiters) do
+        awaiters[i] = false
+    end
+    for i,v in pairs(awaiters) do
+        cons[i]:Disconnect()
+    end
+end)
+local main_tab = menu:Tab()
+
+main_tab:Button({name="Получить 20$",key="false"},function() plrGui.MainMenus.Money.RemoteEvent:FireServer() end)
+main_tab:Button({name="Палучит админку",key="false"},function() plrGui.AdminGui.Enabled = true end)
+
+B[1] = main_tab:Toggle({name="Писюн с вагинай",key="false"},function(state)
+    plrGui.MainMenus.Kun.Visible = state
+    plrGui.MainMenus.MorphFrame.MakeMorph:FireServer("Boy",state)
+    plrGui.MainMenus.MorphFrame.MakeMorph:FireServer("Girl",state)
+end)
+awaiters["cum"] = false
+B[2] = main_tab:Toggle({name="Фантанчик)"},function(state)
+    awaiters["cum"] = state
+    if state then
+        spawn(function()
+            while awaiters["cum"] do
+                plrGui.MainMenus.Kun.RemoteEvent:FireServer()
+                wait(1.1)
+            end
+        end)
+    end
+end)
