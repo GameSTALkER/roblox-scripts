@@ -1,4 +1,4 @@
--- local UI = getgenv().EasyUI.Library or loadstring(game:HttpGet("raw_url_here"))(); -- Best way to avoid GitHub ratelimit.
+-- local UI = (getgenv().EasyUI and getgenv().EasyUI.Library) or loadstring(game:HttpGet("raw_url_here"))(); -- Best way to avoid GitHub ratelimit.
 -- Call getgenv().EasyUI.Destroy(); to unload lib
 
 local UserInputService = game:GetService("UserInputService");
@@ -443,4 +443,4 @@ getgenv().EasyUI = {
         getgenv().EasyUI = nil;
     end;
 };
-return getgenv().EasyUI;
+return UI;
