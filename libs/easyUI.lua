@@ -1,5 +1,4 @@
--- local UI = (getgenv().EasyUI and getgenv().EasyUI.Library) or loadstring(game:HttpGet("raw_url_here"))(); -- Best way to avoid GitHub ratelimit.
--- Call getgenv().EasyUI.Destroy(); to unload lib
+-- local UI = (getgenv().lyuksiksHub and getgenv().lyuksiksHub.UI) or loadstring(game:HttpGet("raw_url_here"))(); -- Best way to avoid GitHub ratelimit.
 
 local UserInputService = game:GetService("UserInputService");
 local TweenService = game:GetService("TweenService");
@@ -437,10 +436,8 @@ UI.Dragify = function(Button, Frame)
 	end);
 end;
 
-getgenv().EasyUI = {
-    Library = UI;
-    Destroy = function()
-        getgenv().EasyUI = nil;
-    end;
-};
+if not getgenv().lyuksiksHub then
+    getgenv().lyuksiksHub = {};
+end;
+getgenv().lyuksiksHub.UI = UI;
 return UI;
