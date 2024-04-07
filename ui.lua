@@ -1,4 +1,5 @@
--- local UI = getgenv().EasyUILibrary or loadstring(game:HttpGet("raw_url_here"))() -- Best way to avoid GitHub ratelimit.
+-- local UI = getgenv().EasyUI.Library or loadstring(game:HttpGet("raw_url_here"))(); -- Best way to avoid GitHub ratelimit.
+-- Call getgenv().EasyUI.Destroy(); to unload lib
 
 local UserInputService = game:GetService("UserInputService");
 local TweenService = game:GetService("TweenService");
@@ -261,6 +262,19 @@ UI.Corner = function(parent, properties)
 	end;
 	return instance;
 end;
+UI.Scale = function(parent, properties)
+	properties = properties or {};
+
+	local instance = Instance.new("UIScale", parent);
+	instance.Name = "UIScale";
+	instance.Scale = 1;
+	for i,v in pairs(properties) do
+		pcall(function()
+			instance[i] = v;
+		end);
+	end;
+	return instance;
+end;
 UI.Stroke = function(parent, properties)
 	properties = properties or {};
 
@@ -423,5 +437,10 @@ UI.Dragify = function(Button, Frame)
 	end);
 end;
 
-getgenv().EasyUILibrary = UI;
-return getgenv().EasyUILibrary;
+getgenv().EasyUI = {
+    Library = UI;
+    Destroy = function()
+        getgenv().EasyUI = nil;
+    end;
+};
+return getgenv().EasyUI;
