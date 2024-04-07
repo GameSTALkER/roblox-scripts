@@ -375,28 +375,43 @@ UI.PageLayout = function(parent, properties)
 	return instance;
 end;
 -- // Custom
-UI.Dragify = function(Button, Frame)
-	Frame = Frame or Button
+UI.Dragify = function(Button, Frame, Flags)
+	Frame = Frame or Button;
+    Holder = Flags and Flags.Holder or nil;
+    Animation = Flags and Flags.Animation or nil;
 	local dragToggle = false;
 	local dragInput;
 	local dragStart;
 	local dragPos;
 	local startPos;
 	local cons = {};
-	local tw = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
 
 	local function updateInput(input)
-		local Delta = input.Position - dragStart;
-		local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y);
-		--Frame.Position = Position;
-		local anim = TweenService:Create(Frame, tw, {
-			Position = Position;
-		});
-		anim:Play();
-		spawn(function()
-			anim.Completed:Wait();
-			anim:Destroy();
-		end);
+        local Delta = input.Position - dragStart;
+        local X = startPos.X.Offset + Delta.X;
+        local Y = startPos.Y.Offset + Delta.Y;
+        local sX = X + Frame.AbsoluteSize.X;
+        local sY = Y + Frame.AbsoluteSize.Y;
+		
+        local MinX = Holder.AbsolutePosition.X;
+        local MinY = Holder.AbsolutePosition.Y;
+        local MaxX = Holder.AbsoluteSize.X;
+        local MaxY = Holder.AbsoluteSize.Y;
+        
+		local Position = UDim2.new(startPos.X.Scale, (X <= MinX and MinX) or (sX >= MaxX and MaxX - Frame.AbsoluteSize.X) or X, startPos.Y.Scale, (Y <= MinY and MinY) or (sY >= MaxY and MaxY - Frame.AbsoluteSize.Y) or Y);
+
+		if Animation then
+            local anim = TweenService:Create(Frame, Animation, {
+                Position = Position;
+            });
+            anim:Play();
+            spawn(function()
+                anim.Completed:Wait();
+                anim:Destroy();
+            end);
+            return
+        end;
+        Frame.Position = Position;
 	end;
 
 	cons[1] = Button.InputBegan:Connect(function(input)
