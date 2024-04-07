@@ -398,7 +398,7 @@ UI.Dragify = function(Button, Frame, Flags)
         local MaxX = Holder.AbsoluteSize.X;
         local MaxY = Holder.AbsoluteSize.Y;
         
-		local Position = UDim2.new(startPos.X.Scale, (X <= MinX and MinX) or (sX >= MaxX and MaxX - Frame.AbsoluteSize.X) or X, startPos.Y.Scale, (Y <= MinY and MinY) or (sY >= MaxY and MaxY - Frame.AbsoluteSize.Y) or Y);
+		local Position = UDim2.new(startPos.X.Scale, (X <= MinX and MinX) or (sX >= MaxX and MaxX - Frame.AbsoluteSize.X - MinX) or X, startPos.Y.Scale, (Y <= MinY and MinY) or (sY >= MaxY and MaxY - Frame.AbsoluteSize.Y - MinY) or Y);
 
 		if Animation then
             local anim = TweenService:Create(Frame, Animation, {
