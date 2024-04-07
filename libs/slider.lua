@@ -1,3 +1,4 @@
+-- local Slider = (getgenv().lyuksiksHub and getgenv().lyuksiksHub.Slider) or loadstring(game:HttpGet("raw_url_here"))(); -- Best way to avoid GitHub ratelimit.
 
 ----------------------------- Slider Module -----------------------------
 -- [Author]: Krypt
@@ -451,6 +452,9 @@ UserInputService.InputEnded:Connect(function(inputObject: InputObject, internall
 		end
 	end 
 end)
-	
+
+if not getgenv().lyuksiksHub then
+    getgenv().lyuksiksHub = {}
+end
+getgenv().lyuksiksHub.Slider = Slider
 return Slider
------------------------------------------------------------------------------------------
