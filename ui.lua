@@ -1,6 +1,9 @@
+-- local UI = getgenv().EasyUILibrary or loadstring(game:HttpGet("raw_url_here"))() -- Best way to avoid GitHub ratelimit.
 
 local UserInputService = game:GetService("UserInputService");
 local TweenService = game:GetService("TweenService");
+
+local UI = {};
 
 UI.ScreenGui = function(parent, properties)
 	properties = properties or {};
@@ -36,7 +39,7 @@ UI.ScreenGui = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 -- // Frames
 UI.Frame = function(parent, properties)
 	properties = properties or {};
@@ -57,7 +60,7 @@ UI.Frame = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.ScrollingFrame = function(parent, properties)
 	properties = properties or {};
 
@@ -79,7 +82,7 @@ UI.ScrollingFrame = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.CanvasGroup = function(parent, properties)
 	properties = properties or {};
 
@@ -101,7 +104,7 @@ UI.CanvasGroup = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 -- // Text
 UI.TextLabel = function(parent, properties)
 	properties = properties or {};
@@ -126,7 +129,7 @@ UI.TextLabel = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.TextButton = function(parent, properties)
 	properties = properties or {};
 
@@ -178,7 +181,7 @@ UI.TextBox = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 -- // Image
 UI.ImageLabel = function(parent, properties)
 	properties = properties or {};
@@ -199,7 +202,7 @@ UI.ImageLabel = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.ImageButton = function(parent, properties)
 	properties = properties or {};
 
@@ -219,7 +222,7 @@ UI.ImageButton = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.VideoFrame = function(parent, properties)
 	properties = properties or {};
 
@@ -243,7 +246,7 @@ UI.VideoFrame = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 -- // Styles
 UI.Corner = function(parent, properties)
 	properties = properties or {};
@@ -257,7 +260,7 @@ UI.Corner = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.Stroke = function(parent, properties)
 	properties = properties or {};
 
@@ -275,7 +278,7 @@ UI.Stroke = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.Gradient = function(parent, properties)
 	properties = properties or {};
 
@@ -298,7 +301,7 @@ UI.Gradient = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.GridLayout = function(parent, properties)
 	properties = properties or {};
 
@@ -318,7 +321,7 @@ UI.GridLayout = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.ListLayout = function(parent, properties)
 	properties = properties or {};
 
@@ -335,7 +338,7 @@ UI.ListLayout = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 UI.PageLayout = function(parent, properties)
 	properties = properties or {};
 
@@ -357,7 +360,7 @@ UI.PageLayout = function(parent, properties)
 		end);
 	end;
 	return instance;
-end
+end;
 -- // Custom
 UI.Dragify = function(Button, Frame)
 	Frame = Frame or Button
@@ -419,3 +422,6 @@ UI.Dragify = function(Button, Frame)
 		cons = {};
 	end);
 end;
+
+getgenv().EasyUILibrary = UI;
+return getgenv().EasyUILibrary;
