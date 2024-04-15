@@ -363,7 +363,7 @@ function Highlight:init(frame)
 
         local parentSize = frame.AbsoluteSize
         scrollingFrame.Name = "HIGHLIGHT_IDE"
-        scrollingFrame.Size = UDim2.new(0, parentSize.X, 0, parentSize.Y)
+        scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
         scrollingFrame.BackgroundTransparency = 1;
         scrollingFrame.BorderSizePixel = 0
         scrollingFrame.ScrollBarThickness = 4
