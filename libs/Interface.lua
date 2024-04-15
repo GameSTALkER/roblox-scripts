@@ -214,6 +214,7 @@ UI.ImageButton = function(parent, properties)
 	instance.Size = UDim2.new(0, 100, 0, 100);
 	instance.Image = "";
 	instance.BorderSizePixel = 0;
+	instance.AutoButtonColor = false;
 	instance.AutoLocalize = false;
 	instance.Archivable = false;
 	for i,v in pairs(properties) do
