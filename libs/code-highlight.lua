@@ -345,7 +345,7 @@ end
 
 function updateCanvasSize()
     -- local codeSize = Vector2.new(TextService:GetTextSize(Highlight:getRaw(), textSize, font, Vector2.new(math.huge, math.huge)).X + 60, #lines * lineSpace + 60)
-    --scrollingFrame.CanvasSize = UDim2.new(0, largestX, 0, line * lineSpace)
+    scrollingFrame.CanvasSize = UDim2.new(0, largestX, 0, line * lineSpace)
 end
 
 -- PUBLIC METHODS --
@@ -367,7 +367,6 @@ function Highlight:init(frame)
         scrollingFrame.BackgroundTransparency = 1;
         scrollingFrame.BorderSizePixel = 0
         scrollingFrame.ScrollBarThickness = 4
-        scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.XY;
 
         textFrame.Name = ""
         textFrame.Size = UDim2.new(1, -40, 1, 0)
