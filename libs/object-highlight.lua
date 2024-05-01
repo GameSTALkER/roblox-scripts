@@ -73,7 +73,8 @@ end;
 module.UseTeamColorsChanged = function(value)
 	for i, instance in pairs(PlayerObjects) do
 		if tonumber(i) then
-			instance[1].FillColor = value and Players:GetPlayerFromCharacter(instance[1].Adornee).TeamColor.Color or properties.Color;
+			local Player = Players:GetPlayerFromCharacter(instance[1].Adornee);
+			instance[1].FillColor = value and Player and Player.Team and Player.Team.TeamColor.Color or properties.Color;
 			instance[1].OutlineColor = instance[1].FillColor;
 		end;
 	end;
@@ -82,7 +83,7 @@ end;
 function module.new(Model)
 	local instance = Instance.new("Highlight", properties.Parent);
 	local Player = Players:GetPlayerFromCharacter(Model);
-	instance.FillColor = properties.UseTeamColors and Player and Player.TeamColor.Color or properties.Color;
+	instance.FillColor = properties.UseTeamColors and Player and Player.Team and Player.Team.TeamColor.Color or properties.Color;
 	instance.OutlineColor = instance.FillColor;
 	instance.FillTransparency = properties.FillTransparency;
 	instance.OutlineTransparency = properties.OutlineTransparency;
@@ -140,7 +141,7 @@ local function preparePlayer(Player)
 			prepareCharacter(highlight, Model);
 		end);
 		Player:GetPropertyChangedSignal("Team"):Connect(function()
-			highlight.FillColor = properties.UseTeamColors and Player.TeamColor.Color or properties.Color;
+			highlight.FillColor = properties.UseTeamColors and Player.Team and Player.Team.TeamColor.Color or properties.Color;
 			highlight.OutlineColor = highlight.FillColor;
 		end);
 	};
