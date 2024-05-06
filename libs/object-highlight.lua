@@ -85,24 +85,9 @@ module.UseTeamColorsChanged = function(value)
 	end;
 end;
 
-module.NamingEnabledChanged = function(value)
-	for i, instance in pairs(Objects) do
-		
-	end;
-end;
-module.DistanceEnabledChanged = function(value)
-	for i, instance in pairs(Objects) do
-		
-	end;
-end;
-module.HealthEnabledChanged = function(value)
-	for i, instance in pairs(Objects) do
-
-	end;
-end;
 module.ToolsEnabledChanged = function(value)
 	for i, instance in pairs(Objects) do
-		
+		instance.ui.List.Visible = value;
 	end;
 end;
 
@@ -142,7 +127,7 @@ function module.new(Model)
 	info.TextColor3 = instance.FillColor;
 	
 	local list = Instance.new("Frame", gui);
-	list.Name = "Active";
+	list.Name = "List";
 	list.AnchorPoint = Vector2.new(0, 0);
 	list.Position = UDim2.new(0.99, 0, 0, 0);
 	list.Size = UDim2.new(1, 0, 0, 1);
@@ -162,6 +147,7 @@ function module.new(Model)
 	sample.TextStrokeTransparency = 0;
 	sample.TextColor3 = instance.FillColor;
 	sample.LayoutOrder = 1;
+	sample.TextXAlignment = Enum.TextXAlignment.Left;
 	
 	local id = #Objects + 1;
 
@@ -217,7 +203,11 @@ function module.new(Model)
 				Distance = math.round((part.CFrame.Position - LocalPlayer.Character.PrimaryPart.CFrame.Position).Magnitude);
 			end;
 			
-			info.Text = Name .. (Health and (" | " .. Health) or "") .. (Distance ~= 0 and (" | " .. tostring(Distance) .. " Studs") or "");
+			local Name = (properties.NamingEnabled and Name or "");
+			local Health = (properties.HealthEnabled and Health and ((Name ~= "" and " | " or "") .. Health) or "");
+			Distance = (properties.DistanceEnabled and Distance ~= 0 and (((Name .. Health) ~= "" and " | " or "") .. tostring(Distance) .. " Studs") or "");
+			
+			info.Text = Name .. Health .. Distance;
 		end;
 		con2 = RunService.RenderStepped:Connect(changeData);
 		
