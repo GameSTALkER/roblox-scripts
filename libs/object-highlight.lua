@@ -6,9 +6,12 @@ local LocalPlayer = Players.LocalPlayer;
 local module, properties, meta = {}, {}, {};
 local Objects = {};
 local PlayerObjects = {};
+local HumanoidObjects = {};
 
 properties.Parent = game:GetService("ReplicatedStorage");
 properties.Color = Color3.new(1, 1, 1);
+properties.HumanoidColor = Color3.new(1, 1, 1);
+properties.SelfColor = Color3.new(1, 1, 1);
 properties.AllyColor = Color3.new(0, 1, 0);
 
 properties.FillTransparency = 0.5
@@ -31,11 +34,52 @@ module.ParentChanged = function(value)
 end;
 module.ColorChanged = function(value)
 	for i, instance in pairs(Objects) do
-		instance.FillColor = value;
-		instance.OutlineColor = value;
+		local IsHumanoid = instance.Adornee:FindFirstChildOfClass("Humanoid");
+		local IsPlayer = Players:GetPlayerFromCharacter(instance.Adornee);
+		local IsLocalPlayer = IsPlayer and IsPlayer == LocalPlayer;
+		if (not IsLocalPlayer) then
+			if IsPlayer and (not properties.UseTeamColors) then
+				instance.FillColor = value;
+			elseif (not IsHumanoid) and (not IsPlayer) then
+				instance.FillColor = value;
+			end;
+			instance.OutlineColor = instance.FillColor;
+		end;
+	end;
+end;
+module.HumanoidColorChanged = function(value)
+	for i, instance in pairs(Objects) do
+		local IsHumanoid = instance.Adornee:FindFirstChildOfClass("Humanoid");
+		local IsPlayer = Players:GetPlayerFromCharacter(instance.Adornee);
+		if IsHumanoid and (not IsPlayer) then
+			instance.FillColor = value;
+			instance.OutlineColor = instance.FillColor;
+		end;
+	end;
+end;
+module.SelfColorChanged = function(value)
+	for i, instance in pairs(Objects) do
+		local IsPlayer = Players:GetPlayerFromCharacter(instance.Adornee);
+		local IsLocalPlayer = IsPlayer and IsPlayer == LocalPlayer;
+		
+		if IsLocalPlayer then
+			instance.FillColor = value;
+			instance.OutlineColor = instance.FillColor;
+			break;
+		end;
 	end;
 end;
 module.AllyColorChanged = function(value)
+	if not properties.HighlightAllies then return; end;
+	for i, instance in pairs(Objects) do
+		local IsPlayer = Players:GetPlayerFromCharacter(instance.Adornee);
+		local IsLocalPlayer = IsPlayer and IsPlayer == LocalPlayer;
+		
+		if IsPlayer and (not IsLocalPlayer) and IsPlayer.Team == LocalPlayer.Team then
+			instance.FillColor = value;
+			instance.OutlineColor = instance.FillColor;
+		end;
+	end;
 end;
 
 module.FillTransparencyChanged = function(value)
@@ -66,20 +110,21 @@ end;
 module.HighlightAlliesChanged = function(value)
 	for i, instance in pairs(PlayerObjects) do
 		if tonumber(i) and instance[1].Adornee ~= LocalPlayer.Character then
+			local Player = Players:GetPlayerFromCharacter(instance[1].Adornee);
 			if value then
 				instance[1].Enabled = true;
 			else
-				instance[1].Enabled = (Players:GetPlayerFromCharacter(instance[1].Adornee).Team ~= LocalPlayer.Team);
+				instance[1].Enabled = Player.Team ~= LocalPlayer.Team;
 			end;
 		end;
 	end;
-
 end;
 module.UseTeamColorsChanged = function(value)
 	for i, instance in pairs(PlayerObjects) do
-		if tonumber(i) then
+		if tonumber(i) and instance[1].Adornee ~= LocalPlayer.Character then
 			local Player = Players:GetPlayerFromCharacter(instance[1].Adornee);
-			instance[1].FillColor = value and Player and Player.Team and Player.Team.TeamColor.Color or properties.Color;
+			local DefaultColor = (not Player.Neutral) and Player.Team == LocalPlayer.Team and properties.AllyColor or properties.Color;
+			instance[1].FillColor = value and (not Player.Neutral) and (Player.Team == LocalPlayer.Team and DefaultColor or Player.Team.TeamColor.Color) or DefaultColor;
 			instance[1].OutlineColor = instance[1].FillColor;
 		end;
 	end;
@@ -93,8 +138,10 @@ end;
 
 function module.new(Model)
 	local instance = Instance.new("Highlight", properties.Parent);
+	local IsHumanoid = Model and Model:FindFirstChildOfClass("Humanoid");
 	local Player = Players:GetPlayerFromCharacter(Model);
-	instance.FillColor = properties.UseTeamColors and Player and Player.Team and Player.Team.TeamColor.Color or properties.Color;
+	local Color = Player and ((Player == LocalPlayer and properties.SelfColor) or ((not Player.Neutral) and Player.Team == LocalPlayer.Team and properties.AllyColor) or (properties.UseTeamColors and (not Player.Neutral) and Player.Team ~= LocalPlayer.Team and Player.Team.TeamColor.Color)) or IsHumanoid and properties.HumanoidColor or properties.Color;
+	instance.FillColor = Color;
 	instance.OutlineColor = instance.FillColor;
 	instance.FillTransparency = properties.FillTransparency;
 	instance.OutlineTransparency = properties.OutlineTransparency;
@@ -296,14 +343,21 @@ local function preparePlayer(Player)
 		prepareCharacter(highlight, Player.Character);
 	end;
 	
+	local Color = (Player == LocalPlayer and properties.SelfColor) or ((not Player.Neutral) and Player.Team == LocalPlayer.Team and properties.AllyColor) or (properties.UseTeamColors and (not Player.Neutral) and Player.Team ~= LocalPlayer.Team and Player.Team.TeamColor.Color) or properties.Color;
+	highlight.FillColor = Color;
+	highlight.OutlineColor = highlight.FillColor;
+
 	PlayerObjects[tostring(Player.UserId)] = {
 		highlight;
 		Player.CharacterAdded:Connect(function(Model)
 			prepareCharacter(highlight, Model);
 		end);
 		Player:GetPropertyChangedSignal("Team"):Connect(function()
-			highlight.FillColor = properties.UseTeamColors and Player.Team and Player.Team.TeamColor.Color or properties.Color;
+			local Color = (Player == LocalPlayer and properties.SelfColor) or ((not Player.Neutral) and Player.Team == LocalPlayer.Team and properties.AllyColor) or (properties.UseTeamColors and (not Player.Neutral) and Player.Team ~= LocalPlayer.Team and Player.Team.TeamColor.Color) or properties.Color;
+			highlight.FillColor = Color;
 			highlight.OutlineColor = highlight.FillColor;
+			module.UseTeamColorsChanged(properties.UseTeamColors);
+			module.HighlightAlliesChanged(properties.HighlightAllies);
 		end);
 	};
 end;
@@ -342,10 +396,21 @@ function module:Players(state)
 		PlayerObjects = {};
 	end;
 end;
-PlayerObjects["TeamChanged"] = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
-	module.HighlightAlliesChanged(meta.HighlightAllies);
-end);
 
+function module:Humanoids(state)
+	if state then
+		for i, v in pairs(workspace:GetDescendants()) do
+			if v:FindFirstChildOfClass("Humanoid") and (not Players:GetPlayerFromCharacter(v)) then
+				table.insert(HumanoidObjects, module.new(v));
+			end;
+		end;
+	else
+		for i, v in pairs(HumanoidObjects) do
+			v:Destroy();
+		end;
+		HumanoidObjects = {};
+	end;
+end;
 
 function module:Destroy()
 	module:Players(false);
@@ -361,10 +426,10 @@ meta = setmetatable(module, {
 		return properties[index];
 	end,
 	__newindex = function(root, index, value)
+		properties[index] = value;
 		if module[index .. "Changed"] then
 			module[index .. "Changed"](value);
 		end;
-		properties[index] = value
 		return value;
 	end;
 });
